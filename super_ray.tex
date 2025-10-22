@@ -1,0 +1,129 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb, amsfonts, physics, graphicx, hyperref, color}
+
+\title{Super-Rays: Unified PCR--SED Framework with $\tau$-clock, M-shift, and Geometric Phase Drivers}
+\author{Travis Jones}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We present a fully unified framework for \emph{super-rays}, ergotropic flux fields combining Post-Canonical Regauging (PCR) and UFT311 Stochastic Electrodynamics (SED). 
+The formalism integrates $\tau$-clock reparametrization, oscillatory integral seeding, M-shift modulation, tetrahedral geometric scaffolding, Möbius spiral phase drivers, and zeta-hex weighted FFT filters. 
+A Projective–Clifford Regauging operator $\mathcal{P}=\mathbf{1}+\varepsilon \Gamma(x)$ introduces an intrinsic antisymmetric component in the super-ray flux tensor $\Phi_{\mu\nu}$, producing torsion and parity-odd holographic effects. 
+We provide both the Lagrangian formulation and its numerical Python correspondence, enabling visualization of ergotropy propagation, Möbius spiral evolution, and gravitational birefringence induced by PCR.
+\end{abstract}
+
+\section{Theoretical Framework}
+
+\subsection{Spacetime and Super-Ray Fields}
+Let spacetime coordinates be $x^\mu=(t,x,y,z)$ with metric $g_{\mu\nu}$ and covariant derivative $\nabla_\mu$. 
+The scalar super-ray field $\psi(x)$ carries information; its PCR-regauged dynamics are governed by
+\begin{equation}
+\Phi_{\mu\nu} = \partial_\mu \psi_\nu - \partial_\nu \psi_\mu + \Gamma_{\mu\nu}(x),
+\end{equation}
+where $\Gamma_{\mu\nu}(x)$ encodes the PCR asymmetry.
+
+\subsection{Unified Lagrangian}
+The complete Lagrangian density reads:
+\begin{align}
+\mathcal{L} &= \frac{1}{2\kappa} R 
+- (\nabla_\mu \psi^\dagger)(\nabla^\mu \psi) - V(|\psi|^2) \nonumber\\
+&\quad - \frac{1}{4} \mathrm{Tr}(\mathcal{F}_{\mu\nu} \mathcal{F}^{\mu\nu}) 
+- \lambda_1\,\bar\psi (\mathcal{P}^\dagger \gamma^\mu \nabla^\nu \mathcal{P}) \psi g_{\mu\alpha} g_{\nu\beta} m^{\alpha\beta} \nonumber\\
+&\quad - \frac{\alpha}{2} \psi^\dagger (\Gamma_{[\mu}\nabla_{\nu]}\psi) \epsilon^{\mu\nu\rho\sigma} n_\rho u_\sigma + \mathrm{c.c.} 
+- \frac{1}{2} \int d\omega\, \rho(\omega) |\tilde{\psi}(\omega)|^2 \zeta_{\hexagon}(\omega),
+\end{align}
+where the last term corresponds to zeta-hex weighted FFT SED filtering.
+
+\subsection{Euler--Lagrange Equations}
+\textbf{Scalar field:}
+\begin{equation}
+-\nabla^\mu\nabla_\mu\psi + V'(|\psi|^2)\psi 
+- \beta\, \Gamma_{[\mu}\nabla_{\nu]}\psi\, S^{\mu\nu} = 0
+\end{equation}
+
+\textbf{PCR field (if dynamical):}
+\begin{equation}
+\nabla^\mu \mathcal{F}_{\mu\nu} + m_\Gamma^2 \Gamma_\nu = J_\nu^{\rm PCR}, 
+\quad 
+J_\nu^{\rm PCR} = \frac{\delta \mathcal{L}_{\rm int}}{\delta \Gamma^\nu}
+\end{equation}
+
+\textbf{Metric / Einstein equation:}
+\begin{equation}
+\frac{1}{\kappa} G_{\mu\nu} = \Phi_{(\mu\nu)} + \nabla^\alpha \Sigma_{\alpha\mu\nu} + T^{\rm matter}_{\mu\nu}
+\end{equation}
+
+\subsection{Flux Tensor Decomposition}
+\begin{align}
+\Phi_{\mu\nu} &= \Phi_{(\mu\nu)} + \Phi_{[\mu\nu]}, \\
+\Phi_{(\mu\nu)} &= (\nabla_\mu\psi^\dagger)(\nabla_\nu\psi) + (\nabla_\nu\psi^\dagger)(\nabla_\mu\psi) - g_{\mu\nu}\,\mathcal{L}_{\rm SR}, \\
+\Phi_{[\mu\nu]} &= \beta\,(\psi^\dagger \Gamma_{[\mu}\nabla_{\nu]}\psi + \mathrm{c.c.})
+\end{align}
+
+\subsection{Numerical / Python Correspondence}
+
+\begin{tabular}{l l}
+\textbf{Function} & \textbf{Equation / Role} \\
+\hline
+\texttt{tau\_map(t,Tc)} & $\tau$-clock reparametrization, Eq.~(5) \\
+\texttt{S\_wave(x)} & Oscillatory integral seed, Eq.~(6) \\
+\texttt{ema\_1d(y,alpha)} & EMA smoothing of $S$, Eq.~(7) \\
+\texttt{m\_shift\_tau(...)} & M-shift modulation $m(\tau)$, Eq.~(8) \\
+\texttt{tetra\_vertices(scale)} & Tetrahedral geometry vertices, Eq.~(9) \\
+\texttt{tetra\_faces(V,m)} & Tetrahedral faces, Eq.~(9) \\
+\texttt{mobius\_spiral\_trajectory(...)} & Möbius spiral $R(t)$, Eq.~(10--12) \\
+\texttt{zeta\_hex\_example(omega)} & Zeta-hex FFT weighting, Sec.~3.6 \\
+\texttt{sed\_filter\_time\_series(...)} & SED FFT filter, Eq.~(13) \\
+\texttt{ergotropy\_proxy\_from\_buffer(...)} & Ergotropy diagnostic, Eq.~(14) \\
+\end{tabular}
+
+\subsection{Möbius Spiral Phase Driver}
+\begin{align}
+x(t) &= r \cos\theta \sin\phi \, m(\tau), \\
+y(t) &= r \sin\theta \sin\phi \, m(\tau), \\
+z(t) &= r \cos\phi \, m(\tau), \\
+\theta &= \pi t, \quad \phi = n \theta / 2
+\end{align}
+
+\subsection{SED--FFT Filter}
+\begin{equation}
+\tilde{\psi}_{\rm filtered}(\omega) = \tilde{\psi}(\omega)\left[1 - \alpha_{\rm gain} \, \rho(\omega) \zeta_{\hexagon}(\omega)\right]
+\end{equation}
+
+\subsection{Ergotropy Proxy}
+\begin{equation}
+\mathcal{E}_{\rm proxy} = \sum_\ell \max\left(0, |\tilde{\psi}_\ell|^2 - S(\omega_\ell)\right)
+\end{equation}
+
+\section{Physical Consequences}
+\begin{itemize}
+\item Directional information transport via $\Phi_{[\mu\nu]}$ (non-reciprocal).
+\item Gravitational birefringence: $h_L \neq h_R$ due to PCR coupling.
+\item Torsion generation: $\Phi_{[\mu\nu]}$ sources $T^\alpha{}_{\mu\nu}$ affecting spin precession.
+\item Holographic parity-odd currents: boundary operators $J_i^{\rm bdy}$.
+\item Ergotropy concentration: super-ray modes carry localized usable energy.
+\end{itemize}
+
+\section{Appendix: Minimal Toy Model Lagrangian}
+\begin{equation}
+\mathcal{L} = \frac{1}{2\kappa} R 
+- (\nabla_\mu \psi^\dagger)(\nabla^\mu \psi) 
+- m^2|\psi|^2
++ \beta\, \psi^\dagger A_\mu \gamma^\mu \gamma^5 \psi
++ \alpha\, \psi^\dagger (A_{[\mu}\nabla_{\nu]}\psi) S^{\mu\nu}
+\end{equation}
+
+\section{References}
+\bibliographystyle{plain}
+\begin{thebibliography}{99}
+\bibitem{dirichlet} Dirichlet, P.G.L., \emph{Lectures on Number Theory}, 1837.
+\bibitem{sed} Boyer, T.H., Phys. Rev. D, 1975.
+\bibitem{holo} Maldacena, J., Adv. Theor. Math. Phys., 1998.
+\bibitem{pcr} [UFT94 PCR Regauging notes].
+\bibitem{uft311} [UFT311 SED Vacuum Flux notes].
+\end{thebibliography}
+
+\end{document}
