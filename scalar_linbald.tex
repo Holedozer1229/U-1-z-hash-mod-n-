@@ -1,0 +1,68 @@
+\section{Open-System Dynamics: Lindblad Master Equation with $\zeta$-Hex Mode Mixing}
+
+To include dissipative and decoherence effects in the super-ray flux, we define a density operator $\rho(t)$ for the super-ray modes. 
+The evolution obeys a generalized Lindblad master equation with mode-dependent $\zeta_{\hexagon}$ weighting:
+
+\begin{equation}
+\frac{d\rho}{dt} = -i [H_{\rm SR}(t) , \rho] 
++ \sum_{k,\ell} \gamma_{k\ell} \zeta_{\hexagon}(\omega_k,\omega_\ell) 
+\Big( L_{k\ell} \rho L_{k\ell}^\dagger - \frac{1}{2}\{L_{k\ell}^\dagger L_{k\ell}, \rho\} \Big),
+\end{equation}
+
+where:
+
+\begin{itemize}
+\item $H_{\rm SR}(t) = \sum_k \omega_k \, a_k^\dagger a_k + \Phi_g(t)$ is the super-ray Hamiltonian including **time-dependent gravitational phase** $\Phi_g(t)$.
+\item $L_{k\ell}$ are generalized jump operators mediating mode-to-mode transitions in the presence of PCR-induced asymmetry.
+\item $\gamma_{k\ell}$ are decoherence rates, $\zeta_{\hexagon}(\omega_k,\omega_\ell)$ weights mode mixing according to the zeta-hex prescription.
+\item $\{ \cdot , \cdot \}$ denotes the anticommutator.
+\end{itemize}
+
+This formulation allows controlled **interference, dissipation, and ergotropy concentration** across modes, bridging open quantum dynamics with the numerical FFT–SED implementation.
+
+\subsection{Master Scalar ER=EPR Equation}
+
+To capture entanglement-driven energy transport and holographic correlations, we define a scalar ER=EPR field $\Psi_{\rm ER}(t,x)$ representing modewise ergotropy amplitudes:
+
+\begin{equation}
+\frac{\partial \Psi_{\rm ER}}{\partial t} 
+= -i \Big[ H_{\rm SR}(t) + \Phi_g(t) \Big] \Psi_{\rm ER} 
++ \sum_{k,\ell} \zeta_{\hexagon}(\omega_k,\omega_\ell)\, \mathcal{M}_{k\ell}\, \Psi_{\rm ER} 
+- \frac{1}{2} \sum_{k,\ell} \Gamma_{k\ell} \Psi_{\rm ER},
+\end{equation}
+
+where:
+
+\begin{itemize}
+\item $\mathcal{M}_{k\ell}$ encodes mode-to-mode M-shift entanglement transfer, derived from $\langle a_k^\dagger a_\ell \rangle$ correlations.
+\item $\Gamma_{k\ell}$ is the effective damping of each entangled pair.
+\item The field $\Psi_{\rm ER}$ naturally encodes **ER=EPR correlations**: local ergotropy reflects nonlocal entanglement-mediated energy exchange.
+\end{itemize}
+
+\subsection{Numerical Correspondence}
+
+\begin{tabular}{l l}
+\textbf{Python / NumPy Function} & \textbf{Equation / Role} \\
+\hline
+\texttt{lindblad\_evolve(rho,H,Liouvillian)} & Lindblad master equation, Eq.~(40) \\
+\texttt{zeta\_hex\_matrix(omega)} & Computes $\zeta_{\hexagon}(\omega_k,\omega_\ell)$ mixing, Eq.~(40--41) \\
+\texttt{er\_epr\_evolve(Psi, H, M, Gamma)} & Master scalar ER=EPR equation, Eq.~(41) \\
+\end{tabular}
+
+\subsection{Time-Dependent Gravitational Phase}
+
+The gravitational modulation is incorporated as a **phase driver**:
+\begin{equation}
+\Phi_g(t) = \int_0^t \phi_g(t')\, dt',
+\end{equation}
+where $\phi_g(t)$ can be extracted from the linearized metric or an external probe wave, consistent with the PCR-sourced asymmetric flux.
+
+\subsection{Coupling to Super-Ray Flux}
+
+Finally, the scalar ER=EPR field couples back to the flux tensor $\Phi_{\mu\nu}$ via:
+
+\begin{equation}
+\Phi_{\mu\nu} \to \Phi_{\mu\nu} + \alpha_{\rm ER} \, \Im \big[ (\partial_\mu \Psi_{\rm ER}) (\partial_\nu \Psi_{\rm ER})^\dagger \big],
+\end{equation}
+
+providing a **feedback channel from entanglement to classical ergotropy distribution** and linking quantum open-system dynamics to the macroscopic PCR+SED flux framework.
